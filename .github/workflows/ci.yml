@@ -1,0 +1,24 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login into Dockerhub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PAT: ${{ secrets.DOCKER_PAT }}
+        run: echo "$DOCKER_PAT" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - name: Build the Docker image
+        run: docker build -t sarahbadibanga883/cicd-airbyte .
+
+      - name: Push to Docker Hub
+        run: docker push sarahbadibanga883/cicd-airbyte:latest
